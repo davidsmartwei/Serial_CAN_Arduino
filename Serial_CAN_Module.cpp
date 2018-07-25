@@ -50,16 +50,18 @@ unsigned char Serial_CAN::recv(unsigned long *id, uchar *buf)
             while(canSerial->available())
             {
                 dta[len++] = canSerial->read();
+		if(len == 12)
+                    break;
                 timer_s = millis();
+            	if((millis()-timer_s) > 10)
+                    return 0; // Reading 12 bytes should be faster than 10ms, abort if it takes longer, we loose the partial message in this case
             }
             
-            if((millis()-timer_s) > 10)return 0;
-            
-            if(len == 12)
+            if(len == 12) // Just to be sure, must be 12 here
             {
                 unsigned long __id = 0;
                 
-                for(int i=0; i<4; i++)
+                for(int i=0; i<4; i++) // Store the id of the sender
                 {
                     __id <<= 8;
                     __id += dta[i];
@@ -67,7 +69,7 @@ unsigned char Serial_CAN::recv(unsigned long *id, uchar *buf)
                 
                 *id = __id;
                 
-                for(int i=0; i<8; i++)
+                for(int i=0; i<8; i++) // Store the message in the buffer
                 {
                     buf[i] = dta[i+4];
                 }

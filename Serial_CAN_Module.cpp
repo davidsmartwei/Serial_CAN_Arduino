@@ -1,13 +1,12 @@
 // ID3 ID2 ID1 ID0 EXT RTR DTA0 DTA1 DTA2 DTA3 DTA4 DTA5 DTA6 DTA7
 
 #include <Serial_CAN_Module.h>
-#include <SoftwareSerial.h>
 
-SoftwareSerial *canSerial = NULL;
+HardwareSerial *canSerial = NULL;
 
-void Serial_CAN::begin(int can_tx, int can_rx, unsigned long baud)
+void Serial_CAN::begin(HardwareSerial* serial, unsigned long baud)
 {
-    canSerial = new SoftwareSerial(can_tx, can_rx);
+    canSerial = serial;
     canSerial->begin(baud);
 }
 
